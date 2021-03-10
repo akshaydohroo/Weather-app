@@ -12,7 +12,9 @@ body{
     -o-background-size: cover;
     background-size: cover;
     height: 100vh;
+
 }
+
 
 .app_container{
     padding: 20px;
@@ -31,19 +33,20 @@ body{
     font-size: xx-large;
     font-weight: 500;
     margin: 10px;
+    text-align: left;
 }
 .current_weather .location{
     font-size: 3rem;
     font-weight: 700;
-    margin: 3px;
+    
 }
 .current_weather .date{
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 .current_weather .temperature_value{
     font-size: 6rem;
     font-weight: 900;
-    margin: 0 0 5px;
+    margin: 5px;
 }
 
 .current_weather .weather_name{
