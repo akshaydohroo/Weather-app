@@ -57,4 +57,50 @@ body{
     font-weight: 800;
 }
 
+.forecast-container{
+    display: flex;
+    justify-content: center;
+    width: 75%;
+    margin: 2%;
+    flex-wrap: wrap;
+}
+.forecast-container>div> .icon{
+    grid-area: icon;
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+.forecast-container>div> .date{
+    grid-area: date;
+    text-align: center;
+    line-height: 50px;
+}.forecast-container>div> .temperature{
+    grid-area: temperature;
+    font-size: 3rem;
+    font-weight: 800px;
+    text-align: center;
+}.forecast-container>div> .nameWeather{
+    grid-area: nameWeather;
+}.forecast-container>div> .min_max{
+    grid-area: min_max;
+}
+
+.forecast-container>div{
+    background-color: white;
+    height: 250px;
+    width: 250px;
+    margin: 1%;
+    border-radius: 10px 0 10px 0;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+    grid-template-rows: 1.5fr 1fr 1fr 1fr 1fr;
+    gap: 2px 2px;
+    grid-template-areas: 
+    "icon icon date date"
+    "icon icon nameWeather nameWeather"
+    "temperature temperature temperature temperature"
+    "temperature temperature temperature temperature"
+    " min_max min_max min_max min_max";
+   color: black;
+}
 
