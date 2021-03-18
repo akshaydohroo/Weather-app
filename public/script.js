@@ -54,6 +54,8 @@ window.onload = () => {
       document.body.style.backgroundSize = "cover";
       document.body.style.color = "white";
     }
+    document.querySelector('.search_box').style.position = 'static';
+    document.querySelector('.current_weather').style.display = 'block';
   }
 
   function fetchCurrentWeather(url) {
@@ -153,5 +155,6 @@ window.onload = () => {
       forecast_values[4].textContent = `Max-${forecast.data[x].max_temp}°C/Min-${forecast.data[x].min_temp}°C`
       x = x + 1;
     }
+    document.querySelector('.forecast-container').style.display = 'flex';
   }
 };
