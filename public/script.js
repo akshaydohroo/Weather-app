@@ -5,6 +5,7 @@ window.onload = () => {
   let longitude;
   let latitude;
   const search_city = document.querySelector(".search_city");
+  const search_btn = document.querySelector(".search_btn");
   if (window.navigator) {
     window.navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -17,18 +18,23 @@ window.onload = () => {
       }
     );
   }
+  search_btn.addEventListener("click", () => search(search_city));
   search_city.addEventListener("keydown", (evt) => {
     if (evt.keyCode == 13) {
-      search_city.value = search_city.value.trim();
-      var arr = search_city.value.split(" ");
-      if (arr[1])
-        getCurrentWeather({ city: arr[0].trim(), country: arr[1].trim() });
-      else {
-        getCurrentWeather({ city: arr[0].trim() });
-      }
-      search_city.value = "";
+      search(search_city);
     }
   });
+
+  function search(search_city) {
+    search_city.value = search_city.value.trim();
+    var arr = search_city.value.split(" ");
+    if (arr[1])
+      getCurrentWeather({ city: arr[0].trim(), country: arr[1].trim() });
+    else {
+      getCurrentWeather({ city: arr[0].trim() });
+    }
+    search_city.value = "";
+  }
 
   function displayCurrentWeatherResults(current_weather) {
     current_weather = current_weather.data[0];
@@ -40,22 +46,25 @@ window.onload = () => {
       location.textContent = `${current_weather.city_name}, ${country}`;
     });
 
-    date.textContent = dateBuilder(current_weather.datetime);
+    date.textContent = dateBuilder(current_weather.datetime, true);
     temperature_value.textContent = current_weather.temp + "°C";
     weather_name.textContent = current_weather.weather.description;
-    if (current_weather.pod == "n") {
-      document.body.style.background =
-        ' url("../images/night.webp") no-repeat center center fixed';
-      document.body.style.backgroundSize = "cover";
-      document.body.style.color = "black";
-    } else {
-      document.body.style.background =
-        ' url("../images/after_noon.webp") no-repeat center center fixed';
-      document.body.style.backgroundSize = "cover";
-      document.body.style.color = "white";
-    }
-    document.querySelector('.search_box').style.position = 'static';
-    document.querySelector('.current_weather').style.display = 'block';
+    document.body.style.backgroundImage = "none";
+    document.body.style.backgroundColor = "#1b1b29";
+
+    // if (current_weather.pod == "n") {
+    //   document.body.style.background =
+    //     ' url("../images/night.webp") no-repeat center center fixed';
+    //   document.body.style.backgroundSize = "cover";
+    //   document.body.style.color = "black";
+    // } else {
+    //   document.body.style.background =
+    //     ' url("../images/after_noon.webp") no-repeat center center fixed';
+    //   document.body.style.backgroundSize = "cover";
+    //   document.body.style.color = "white";
+    // }
+    document.querySelector(".search_box").style.position = "static";
+    document.querySelector(".current_weather").style.display = "block";
   }
 
   function fetchCurrentWeather(url) {
@@ -65,7 +74,14 @@ window.onload = () => {
       credentials: "same-origin", // include, *same-origin, omit
     })
       .then((response) => {
-        return response.json();
+        console.log(response);
+        if(response.status===204){
+          M.toast({html: 'I am a toast!'})
+        }
+        else
+          return response.json();
+      })
+      .catch(function () {
       })
       .then(displayCurrentWeatherResults);
   }
@@ -102,7 +118,7 @@ window.onload = () => {
       return countryCode;
     }
   }
-  function dateBuilder(datetime) {
+  function dateBuilder(datetime, isYear) {
     var months = [
       "January",
       "February",
@@ -123,7 +139,8 @@ window.onload = () => {
     }
     let month = months[datetime.substring(5, 7) - 1];
     let year = datetime.substring(0, 4);
-    return `${dateOfMonth} ${month} ${year}`;
+    if (isYear) return `${dateOfMonth} ${month} ${year}`;
+    else return `${dateOfMonth} ${month}`;
   }
   async function fetchForecast(url) {
     let res = await fetch(url, {
@@ -133,28 +150,121 @@ window.onload = () => {
     });
     let forecast = await res.json();
     displayForecastWeather(forecast);
+    let min_temp = [];
+    let max_temp = [];
+    let temp = [];
+    dates = [];
+    for (idx = 0; idx <= 7; idx += 1) {
+      min_temp.push(forecast.data[idx].min_temp);
+      max_temp.push(forecast.data[idx].max_temp);
+      temp.push(forecast.data[idx].temp);
+      dates.push(dateBuilder(forecast.data[idx].datetime));
+    }
+    lineChartForecast({
+      min_temp: min_temp,
+      max_temp: max_temp,
+      temp: temp,
+      dates: dates,
+    });
   }
   function displayForecastWeather(forecast) {
     let range = document.querySelector(".range");
-    range.textContent = `Max-${forecast.data[0].max_temp}°C/Min-${forecast.data[0].min_temp}°C`
-    
+    range.textContent = `Max-${forecast.data[0].max_temp}°C/Min-${forecast.data[0].min_temp}°C`;
+
     let forecast_cards = document.querySelector(".forecast-container").children;
 
     let x = 1;
 
     for (let forecast_card of forecast_cards) {
-      
       forecast_values = forecast_card.children;
 
       forecast_values[0].style.backgroundImage = `url('../icons/${forecast.data[x].weather.icon}.png')`;
-      let date = dateBuilder(forecast.data[x].datetime);
-      date = date.substring(0,date.length-5);
-      forecast_values[1].textContent =  date;
-      forecast_values[2].textContent = forecast.data[x].temp+"°C";
+      forecast_values[1].textContent = dateBuilder(forecast.data[x].datetime);
+      forecast_values[2].textContent = forecast.data[x].temp + "°C";
       forecast_values[3].textContent = forecast.data[x].weather.description;
-      forecast_values[4].textContent = `Max-${forecast.data[x].max_temp}°C/Min-${forecast.data[x].min_temp}°C`
+      forecast_values[4].textContent = `Max-${forecast.data[x].max_temp}°C/Min-${forecast.data[x].min_temp}°C`;
       x = x + 1;
     }
-    document.querySelector('.forecast-container').style.display = 'flex';
+    document.querySelector(".forecast-container").style.display = "flex";
+  }
+  function lineChartForecast(data) {
+    var ctx = document.querySelector(".line-chart").getContext("2d");
+    var chart = new Chart(ctx, {
+      // The type of chart we want to create
+      type: "line",
+
+      // The data for our dataset
+      data: {
+        labels: data.dates,
+        datasets: [
+          {
+            label: "Minimum Temperature",
+            data: data.min_temp,
+            borderColor: "blue",
+            lineTension: 0,
+            borderWidth: 2,
+            backgroundColor: "white",
+            pointBackgroundColor: "white",
+            pointHoverRadius: 5,
+          },
+          {
+            label: "Maximum Temperature",
+            data: data.max_temp,
+            borderColor: "red",
+            lineTension: 0,
+            borderWidth: 2,
+            backgroundColor: "white",
+            pointBackgroundColor: "white",
+            pointHoverRadius: 5,
+          },
+          {
+            label: "Temperature",
+            data: data.temp,
+            borderColor: "green",
+            lineTension: 0,
+            borderWidth: 2,
+            backgroundColor: "white",
+            pointBackgroundColor: "white",
+            pointHoverRadius: 5,
+          },
+        ],
+      },
+
+      // Configuration options go here
+      options: {
+        maintainAspectRatio: false,
+        scales: {
+          xAxes: [
+            {
+              type: "category",
+              display: true,
+              gridLines: {
+                z: 1,
+              },
+            },
+          ],
+          yAxes: [
+            {
+              display: true,
+              gridLines: {
+                z: 1,
+              },
+            },
+          ],
+        },
+        legend: {
+          labels: {
+            fontSize: 14,
+          },
+        },
+        title: {
+          display: true,
+          text: "Forecast",
+          fontSize: 18,
+        },
+      },
+    });
+
+    document.querySelector(".forecast-chart").style.display = "block";
   }
 };
