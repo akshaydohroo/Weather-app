@@ -6,23 +6,13 @@ window.onload = () => {
   let latitude;
   const search_city = document.querySelector(".search_city");
   const search_btn = document.querySelector(".search_btn");
-  if (window.navigator) {
-    window.navigator.geolocation.getCurrentPosition(
-      (position) => {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-        getCurrentWeather({ lat: latitude, long: longitude });
-      },
-      (error) => {
-        throw error;
-      }
-    );
-  }
+  
+  
   search_btn.addEventListener("click", () => search(search_city));
   search_city.addEventListener("keydown", (evt) => {
     if (evt.keyCode == 13) {
       search(search_city);
-    }
+    } 
   });
 
   function search(search_city) {
@@ -74,14 +64,16 @@ window.onload = () => {
       credentials: "same-origin", // include, *same-origin, omit
     })
       .then((response) => {
-        console.log(response);
-        if(response.status===204){
-          M.toast({html: 'I am a toast!'})
+        if (response.status == 204) {
+          throw new Error(
+            "City Not Found , Try to add country as well in search box"
+          );
         }
-        else
-          return response.json();
+        return response.json();
       })
-      .catch(function () {
+      .catch((err) => {
+        alert(err.message);
+        throw err;
       })
       .then(displayCurrentWeatherResults);
   }
