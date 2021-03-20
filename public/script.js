@@ -2,8 +2,7 @@ window.onload = () => {
   let API_KEY = "6564f991bc2b472f86df38bd7e1e3038";
   let base_url = "https://api.weatherbit.io/v2.0/current";
   let baseForecast = "https://api.weatherbit.io/v2.0/forecast/daily";
-  let longitude;
-  let latitude;
+
   const search_city = document.querySelector(".search_city");
   const search_btn = document.querySelector(".search_btn");
   
@@ -170,7 +169,7 @@ window.onload = () => {
     for (let forecast_card of forecast_cards) {
       forecast_values = forecast_card.children;
 
-      forecast_values[0].style.backgroundImage = `url('../icons/${forecast.data[x].weather.icon}.png')`;
+      forecast_values[0].style.backgroundImage = `url('./icons/${forecast.data[x].weather.icon}.png')`;
       forecast_values[1].textContent = dateBuilder(forecast.data[x].datetime);
       forecast_values[2].textContent = forecast.data[x].temp + "°C";
       forecast_values[3].textContent = forecast.data[x].weather.description;
