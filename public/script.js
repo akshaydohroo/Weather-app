@@ -145,7 +145,7 @@ window.onload = () => {
     let max_temp = [];
     let temp = [];
     dates = [];
-    for (idx = 0; idx <= 7; idx += 1) {
+    for (idx = 0; idx <= 6; idx += 1) {
       min_temp.push(forecast.data[idx].min_temp);
       max_temp.push(forecast.data[idx].max_temp);
       temp.push(forecast.data[idx].temp);
@@ -161,7 +161,6 @@ window.onload = () => {
   function displayForecastWeather(forecast) {
     let range = document.querySelector(".range");
     range.textContent = `Max-${forecast.data[0].max_temp}°C/Min-${forecast.data[0].min_temp}°C`;
-
     let forecast_cards = document.querySelector(".forecast-container").children;
 
     let x = 1;
@@ -178,9 +177,14 @@ window.onload = () => {
     }
     document.querySelector(".forecast-container").style.display = "flex";
   }
+  var chart;
   function lineChartForecast(data) {
+  
     var ctx = document.querySelector(".line-chart").getContext("2d");
-    var chart = new Chart(ctx, {
+    if(chart){
+      chart.destroy();
+    }
+    chart = new Chart(ctx, {
       // The type of chart we want to create
       type: "line",
 
